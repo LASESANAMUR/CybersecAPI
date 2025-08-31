@@ -1,0 +1,14 @@
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\bin\Debug\net9.0\CybersecDomain.deps.json
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\bin\Debug\net9.0\CybersecDomain.runtimeconfig.json
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\bin\Debug\net9.0\CybersecDomain.dll
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\bin\Debug\net9.0\CybersecDomain.pdb
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\CybersecDomain.csproj.AssemblyReference.cache
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\CybersecDomain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\CybersecDomain.AssemblyInfoInputs.cache
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\CybersecDomain.AssemblyInfo.cs
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\CybersecDomain.csproj.CoreCompileInputs.cache
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\CybersecDomain.dll
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\refint\CybersecDomain.dll
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\CybersecDomain.pdb
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\CybersecDomain.genruntimeconfig.cache
+C:\Users\LAZARE ASSIE\RiderProjects\CybersecAPI\CybersecDomain\obj\Debug\net9.0\ref\CybersecDomain.dll

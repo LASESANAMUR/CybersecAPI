@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CybersecAPI", "CybersecAPI\CybersecAPI.csproj", "{58052432-426E-4AE8-83A8-31756BDBA1B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CybersecDomain", "CybersecDomain\CybersecDomain.csproj", "{517B001D-444E-49BB-B76F-38DED04674F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CybersecInfrastructure", "CybersecInfrastructure\CybersecInfrastructure.csproj", "{939E1A8E-F235-4753-B9E1-4D7E634E805A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CybersecTest", "CybersecTest\CybersecTest.csproj", "{22E3726B-082B-47A6-A228-94D56E1EE323}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58052432-426E-4AE8-83A8-31756BDBA1B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58052432-426E-4AE8-83A8-31756BDBA1B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58052432-426E-4AE8-83A8-31756BDBA1B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58052432-426E-4AE8-83A8-31756BDBA1B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{517B001D-444E-49BB-B76F-38DED04674F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{517B001D-444E-49BB-B76F-38DED04674F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{517B001D-444E-49BB-B76F-38DED04674F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{517B001D-444E-49BB-B76F-38DED04674F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{939E1A8E-F235-4753-B9E1-4D7E634E805A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{939E1A8E-F235-4753-B9E1-4D7E634E805A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{939E1A8E-F235-4753-B9E1-4D7E634E805A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{939E1A8E-F235-4753-B9E1-4D7E634E805A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22E3726B-082B-47A6-A228-94D56E1EE323}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22E3726B-082B-47A6-A228-94D56E1EE323}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22E3726B-082B-47A6-A228-94D56E1EE323}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22E3726B-082B-47A6-A228-94D56E1EE323}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
