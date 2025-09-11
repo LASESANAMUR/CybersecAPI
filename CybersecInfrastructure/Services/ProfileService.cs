@@ -53,7 +53,14 @@ public class ProfileService : IProfileService
         }
     }
 
-    public async Task<ServiceResult<ProfileDto>> GetProfileByIdAsync(int id)
+    /// <summary>
+    /// Retrieves a profile by its identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the profile to retrieve.</param>
+    /// <returns>A <see cref="ServiceResult{ProfileDto}"/> containing the retrieved profile.</returns>
+    /// <response code="200">The profile was retrieved successfully.</response>
+    /// <response code="404">The profile was not found.</response>
+    public async Task<ServiceResult<ProfileDto>> GetProfileByIdAsync(uint id)
     {
         try
         {
@@ -76,27 +83,40 @@ public class ProfileService : IProfileService
         }
     }
 
+    /// <summary>
+    /// Creates a new profile.
+    /// </summary>
+    /// <param name="profileDto">The data to create the profile with.</param>
+    /// <returns>A <see cref="IActionResult"/> containing the result of the creation operation.</returns>
+    /// <response code="200">The profile was created successfully.</response>
+    /// <response code="400">The profile could not be created.</response>
     public async Task<ServiceResult<ProfileDto>> CreateProfileAsync(CreateProfileDto profileDto)
     {
         try
         {
-            // Créer le logo
-            var createdLogo = await _logoService.CreateLogoAsync(profileDto.LogoUrl);
-            if (!createdLogo.IsSuccess)
-                return ServiceResult<ProfileDto>.Failure(createdLogo.ErrorMessage);
+            dynamic createdLogo = null;
+            if (profileDto.LogoUrl != null)
+            {
+
+                // Créer le logo
+                createdLogo = await _logoService.CreateLogoAsync(profileDto.LogoUrl);
+                if (!createdLogo.IsSuccess)
+                    return ServiceResult<ProfileDto>.Failure(createdLogo.ErrorMessage);
+            }
 
             // Créer le profile
-            var profile = new Profile
-            {
-                Title = profileDto.Title,
-                Shortname = profileDto.ShortName,
-                LogoId = createdLogo.Data.LogoId,
-                Mission = profileDto.Mission,
-                SummaryStatement = profileDto.SummaryStatement
-            };
+                var profile = new Profile
+                {
+                    Title = profileDto.Title,
+                    Shortname = profileDto.ShortName,
+                    LogoId = createdLogo != null ? createdLogo.Data.LogoId :  null,
+                    Mission = profileDto.Mission,
+                    SummaryStatement = profileDto.SummaryStatement
+                };
 
-            _dbContext.Profiles.Add(profile);
-            await _dbContext.SaveChangesAsync(); // 🔹 ProfileId est maintenant disponible
+                _dbContext.Profiles.Add(profile);
+                await _dbContext.SaveChangesAsync(); // 🔹 ProfileId est maintenant disponible
+            
 
             // Créer les alternatives titles avec le ProfileId
             var createdAlternativeTitles =
@@ -189,13 +209,17 @@ public class ProfileService : IProfileService
             profile.SummaryStatement = profileDto.SummaryStatement;
 
             // Update Logo
-            
-            var createdLogo = await _logoService.CreateLogoAsync(profileDto.LogoUrl);
-            if (!createdLogo.IsSuccess)
-                return ServiceResult<ProfileDto>.Failure(createdLogo.ErrorMessage);
+            if (profileDto.LogoUrl != null)
+            {
+                var createdLogo = await _logoService.CreateLogoAsync(profileDto.LogoUrl);
+                if (!createdLogo.IsSuccess)
+                    return ServiceResult<ProfileDto>.Failure(createdLogo.ErrorMessage);
+              
+
+                profile.LogoId = createdLogo.Data.LogoId;
+            }
             var oldLogo = profile.Logo;
-            
-            profile.LogoId = createdLogo.Data.LogoId;
+
             await _dbContext.SaveChangesAsync();
             if (oldLogo != null)
             {

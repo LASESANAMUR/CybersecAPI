@@ -15,6 +15,11 @@ public class LogoService : ILogoService
         _dbContext = dbContext;
     }
     
+    /// <summary>
+    /// Creates a new logo and saves it in the database.
+    /// </summary>
+    /// <param name="url">The URL of the logo.</param>
+    /// <returns>A <see cref="ServiceResult{Logo}"/> containing the created logo or an error message.</returns>
     public async Task<ServiceResult<Logo>> CreateLogoAsync(string url)
     {
         try

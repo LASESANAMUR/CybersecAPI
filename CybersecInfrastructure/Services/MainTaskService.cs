@@ -14,6 +14,17 @@ public class MainTaskService : IMainTaskService
         _dbContext = dbContext;
     }
     
+    /// <summary>
+    /// Crée une liste de tâches principales associées
+    /// à un profile en base de données.
+    /// </summary>
+    /// <param name="task">Liste de tâches principales</param>
+    /// <param name="profileId">Identifiant du profile cible</param>
+    /// <returns>
+    /// Une instance de <see cref="ServiceResult{TData}"/> contenant
+    /// la liste de tâches principales créée en cas de succès, ou
+    /// un message d'erreur en cas d'échec.
+    /// </returns>
     public async Task<ServiceResult<List<MainTask>>> CreateMainTask(List<string> task, uint profileId)
     {
         try

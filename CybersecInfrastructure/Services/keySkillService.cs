@@ -14,6 +14,14 @@ public class keySkillService : IKeySkillService
         _dbContext = dbContext;
     }
     
+    /// <summary>
+    /// Creates new key skills for the given profile ID.
+    /// </summary>
+    /// <param name="skills">The list of skills to add.</param>
+    /// <param name="profileId">The ID of the profile to add the skills for.</param>
+    /// <returns>A service result containing the list of created key skills.</returns>
+    /// <summary>
+    
     public async Task<ServiceResult<List<KeySkill>>> CreateKeySkills(List<string> skills, uint profileId)
     {
         try

@@ -1,3 +1,4 @@
+using System.Reflection;
 using CybersecDomain.context;
 using CybersecInfrastructure;
 using Microsoft.AspNetCore.Authentication;
@@ -34,6 +35,9 @@ builder.Services.AddSwaggerGen(c =>
             Array.Empty<string>()
         }
     });
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
 });
 
 // Add Infrastructure

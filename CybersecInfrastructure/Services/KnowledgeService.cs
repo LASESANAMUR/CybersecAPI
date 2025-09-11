@@ -14,6 +14,12 @@ public class KnowledgeService: IKnowledgeService
         _dbContext = dbContext;
     }
     
+    /// <summary>
+    /// Crée une liste de connaissance liée à un profile
+    /// </summary>
+    /// <param name="knowledgeName">La liste de nom des connaissances</param>
+    /// <param name="profileId">L'identifiant du profile</param>
+    /// <returns>La liste des connaissances créées</returns>
     public async Task<ServiceResult<List<Knowledge>>> CreateKnowledge(List<string> knowledgeName, uint profileId)
     {
         try

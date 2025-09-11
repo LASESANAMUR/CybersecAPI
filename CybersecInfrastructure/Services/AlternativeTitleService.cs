@@ -16,6 +16,12 @@ public class AlternativeTitleService : IAlternativeTitleService
         _dbContext = dbContext;
     }
     
+    /// <summary>
+    /// Crée une liste de titres alternatifs pour un profil.
+    /// </summary>
+    /// <param name="alternativeTitles">La liste des titres alternatifs.</param>
+    /// <param name="profileId">L'ID du profil.</param>
+    /// <returns>Une instance de <see cref="ServiceResult{T}"/> contenant la liste des titres alternatifs créés.</returns>
     public async Task<ServiceResult<List<AlternativeTitle>>> CreateAlternativeTitles(
         List<string> alternativeTitles,
         uint profileId)

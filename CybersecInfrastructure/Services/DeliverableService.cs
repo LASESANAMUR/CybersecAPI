@@ -15,6 +15,12 @@ public class DeliverableService : IDeliverableService
         _dbContext = dbContext;
     }
     
+    /// <summary>
+    /// Crée une liste de livrables liés à un profile en base de données.
+    /// </summary>
+    /// <param name="deliverableNames">Liste des noms de livrables à créer.</param>
+    /// <param name="profileId">Identifiant du profile lié aux livrables à créer.</param>
+    /// <returns>Un objet <see cref="ServiceResult{List{Deliverable}}"/> contenant la liste des livrables créés en cas de succès, ou un message d'erreur en cas d'échec.</returns>
     public async Task<ServiceResult<List<Deliverable>>> CreateDeliverables(List<string> deliverableNames, uint profileId)
     {
         try
