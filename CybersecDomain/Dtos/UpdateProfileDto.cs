@@ -29,12 +29,12 @@ public class UpdateProfileDto
     /// <summary>
     /// Gets or sets the alternative titles as a comma-separated list.
     /// </summary>
-    public string AlternativeTitle { get; set; } // list par virgules
+    public string? AlternativeTitle { get; set; } // list par virgules
     
     /// <summary>
     /// Gets or sets the deliverables as a comma-separated list.
     /// </summary>
-    public string Deliverable { get; set; } // list par virgules
+    public string? Deliverable { get; set; } // list par virgules
     
     /// <summary>
     /// Gets or sets the knowledge areas as a comma-separated list.
@@ -49,7 +49,7 @@ public class UpdateProfileDto
     /// <summary>
     /// Gets or sets the main tasks as a comma-separated list.
     /// </summary>
-    public string MainTask { get; set; } // list par virgules
+    public string? MainTask { get; set; } // list par virgules
     
     /// <summary>
     /// Gets or sets the summary statements as a comma-separated list.

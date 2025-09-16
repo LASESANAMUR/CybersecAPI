@@ -90,80 +90,124 @@ public class ProfileService : IProfileService
     /// <returns>A <see cref="IActionResult"/> containing the result of the creation operation.</returns>
     /// <response code="200">The profile was created successfully.</response>
     /// <response code="400">The profile could not be created.</response>
-    public async Task<ServiceResult<ProfileDto>> CreateProfileAsync(CreateProfileDto profileDto)
+   public async Task<ServiceResult<ProfileDto>> CreateProfileAsync(CreateProfileDto profileDto)
+{
+    try
     {
-        try
+        // -----------------------
+        // Créer Logo (optionnel)
+        // -----------------------
+        dynamic createdLogo = null;
+        if (profileDto.LogoUrl != null)
         {
-            dynamic createdLogo = null;
-            if (profileDto.LogoUrl != null)
-            {
+            createdLogo = await _logoService.CreateLogoAsync(profileDto.LogoUrl);
+            if (!createdLogo.IsSuccess)
+                return ServiceResult<ProfileDto>.Failure(createdLogo.ErrorMessage);
+        }
 
-                // Créer le logo
-                createdLogo = await _logoService.CreateLogoAsync(profileDto.LogoUrl);
-                if (!createdLogo.IsSuccess)
-                    return ServiceResult<ProfileDto>.Failure(createdLogo.ErrorMessage);
-            }
+        // -----------------------
+        // Créer le Profile
+        // -----------------------
+        var profile = new Profile
+        {
+            Title = profileDto.Title,
+            Shortname = profileDto.ShortName,
+            LogoId = createdLogo != null ? createdLogo.Data.LogoId : null,
+            Mission = profileDto.Mission,
+            SummaryStatement = profileDto.SummaryStatement
+        };
 
-            // Créer le profile
-                var profile = new Profile
-                {
-                    Title = profileDto.Title,
-                    Shortname = profileDto.ShortName,
-                    LogoId = createdLogo != null ? createdLogo.Data.LogoId :  null,
-                    Mission = profileDto.Mission,
-                    SummaryStatement = profileDto.SummaryStatement
-                };
+        _dbContext.Profiles.Add(profile);
+        await _dbContext.SaveChangesAsync(); // 🔹 ProfileId est maintenant disponible
 
-                _dbContext.Profiles.Add(profile);
-                await _dbContext.SaveChangesAsync(); // 🔹 ProfileId est maintenant disponible
-            
-
-            // Créer les alternatives titles avec le ProfileId
-            var createdAlternativeTitles =
-                await _alternativeTitleService.CreateAlternativeTitles(profileDto.AlternativeTitle.Split(',').ToList(),
-                    profile.ProfileId);
+        // -----------------------
+        // AlternativeTitles
+        // -----------------------
+        if (!string.IsNullOrWhiteSpace(profileDto.AlternativeTitle))
+        {
+            var createdAlternativeTitles = await _alternativeTitleService.CreateAlternativeTitles(
+                profileDto.AlternativeTitle.Split(',').ToList(),
+                profile.ProfileId
+            );
             if (!createdAlternativeTitles.IsSuccess)
                 return ServiceResult<ProfileDto>.Failure(createdAlternativeTitles.ErrorMessage);
 
-            // Créer les deliverables
-            var createdDeliverables =
-                await _deliverableService.CreateDeliverables(profileDto.Deliverable.Split(',').ToList(),
-                    profile.ProfileId);
+            profile.AlternativeTitles = createdAlternativeTitles.Data;
+        }
+
+        // -----------------------
+        // Deliverables
+        // -----------------------
+        if (!string.IsNullOrWhiteSpace(profileDto.Deliverable))
+        {
+            var createdDeliverables = await _deliverableService.CreateDeliverables(
+                profileDto.Deliverable.Split(',').ToList(),
+                profile.ProfileId
+            );
             if (!createdDeliverables.IsSuccess)
                 return ServiceResult<ProfileDto>.Failure(createdDeliverables.ErrorMessage);
-            
-            // Créer les Knowledge
-            var creadedKnowledge = await _knowledgeService.CreateKnowledge(profileDto.Knowledge.Split(',').ToList(),
-                profile.ProfileId);
-            if (!creadedKnowledge.IsSuccess)
-                return ServiceResult<ProfileDto>.Failure(creadedKnowledge.ErrorMessage);
-            
-            // Créer les KeySkill
-            var createdKeySkill = await _keySkillService.CreateKeySkills(profileDto.KeySkill.Split(',').ToList(),
-                profile.ProfileId);
+
+            profile.Deliverables = createdDeliverables.Data;
+        }
+
+        // -----------------------
+        // Knowledge
+        // -----------------------
+        if (!string.IsNullOrWhiteSpace(profileDto.Knowledge))
+        {
+            var createdKnowledge = await _knowledgeService.CreateKnowledge(
+                profileDto.Knowledge.Split(',').ToList(),
+                profile.ProfileId
+            );
+            if (!createdKnowledge.IsSuccess)
+                return ServiceResult<ProfileDto>.Failure(createdKnowledge.ErrorMessage);
+
+            profile.Knowledge = createdKnowledge.Data;
+        }
+
+        // -----------------------
+        // KeySkills
+        // -----------------------
+        if (!string.IsNullOrWhiteSpace(profileDto.KeySkill))
+        {
+            var createdKeySkill = await _keySkillService.CreateKeySkills(
+                profileDto.KeySkill.Split(',').ToList(),
+                profile.ProfileId
+            );
             if (!createdKeySkill.IsSuccess)
                 return ServiceResult<ProfileDto>.Failure(createdKeySkill.ErrorMessage);
-            
-            // Créer les MainTask
-            var createdMainTask = await _mainTaskService.CreateMainTask(profileDto.MainTask.Split(',').ToList(),
-                profile.ProfileId);
+
+            profile.KeySkill = createdKeySkill.Data;
+        }
+
+        // -----------------------
+        // MainTasks
+        // -----------------------
+        if (!string.IsNullOrWhiteSpace(profileDto.MainTask))
+        {
+            var createdMainTask = await _mainTaskService.CreateMainTask(
+                profileDto.MainTask.Split(',').ToList(),
+                profile.ProfileId
+            );
             if (!createdMainTask.IsSuccess)
                 return ServiceResult<ProfileDto>.Failure(createdMainTask.ErrorMessage);
-            
-            
-            // Associer et sauvegarder
-            profile.AlternativeTitles = createdAlternativeTitles.Data;
-            profile.Deliverables = createdDeliverables.Data;
-            profile.KeySkill = createdKeySkill.Data;
-            await _dbContext.SaveChangesAsync();
 
-            return ServiceResult<ProfileDto>.Success(profile.ToDto());
+            profile.MainTasks = createdMainTask.Data;
         }
-        catch (Exception ex)
-        {
-            return ServiceResult<ProfileDto>.Failure($"An error occurred: {ex.Message}");
-        }
+
+        // -----------------------
+        // Save
+        // -----------------------
+        await _dbContext.SaveChangesAsync();
+
+        return ServiceResult<ProfileDto>.Success(profile.ToDto());
     }
+    catch (Exception ex)
+    {
+        return ServiceResult<ProfileDto>.Failure($"An error occurred: {ex.Message}");
+    }
+}
+
     
     public async Task<ServiceResult<ProfileDto>> DeleteProfileAsync(uint profileId)
     {
@@ -187,93 +231,154 @@ public class ProfileService : IProfileService
     }
 
     public async Task<ServiceResult<ProfileDto>> UpdateProfileAsync(uint profileId, UpdateProfileDto profileDto)
+{
+    try
     {
-        try
+        var profile = await _dbContext.Profiles
+            .Include(p => p.AlternativeTitles)
+            .Include(p => p.Knowledge)
+            .Include(p => p.KeySkill)
+            .Include(p => p.Logo)
+            .Include(p => p.Deliverables)
+            .Include(p => p.MainTasks)
+            .SingleOrDefaultAsync(p => p.ProfileId == profileId);
+
+        if (profile == null)
+            return ServiceResult<ProfileDto>.Failure("Profile not found");
+
+        // Update scalar properties
+        profile.Title = profileDto.Title;
+        profile.Shortname = profileDto.ShortName;
+        profile.Mission = profileDto.Mission;
+        profile.SummaryStatement = profileDto.SummaryStatement;
+
+        // -----------------------
+        // Update Logo
+        // -----------------------
+        if (profileDto.LogoUrl != null)
         {
-            var profile = await _dbContext.Profiles
-                .Include(p => p.AlternativeTitles)
-                .Include(p => p.Knowledge)
-                .Include(p => p.KeySkill)
-                .Include(p => p.Logo)
-                .Include(p => p.Deliverables)
-                .Include(p => p.MainTasks)
-                .SingleOrDefaultAsync(p => p.ProfileId == profileId);
+            var createdLogo = await _logoService.CreateLogoAsync(profileDto.LogoUrl);
+            if (!createdLogo.IsSuccess)
+                return ServiceResult<ProfileDto>.Failure(createdLogo.ErrorMessage);
 
-            if (profile == null)
-                return ServiceResult<ProfileDto>.Failure("Profile not found");
-
-            // Update scalar properties
-            profile.Title = profileDto.Title;
-            profile.Shortname = profileDto.ShortName;
-            profile.Mission = profileDto.Mission;
-            profile.SummaryStatement = profileDto.SummaryStatement;
-
-            // Update Logo
-            if (profileDto.LogoUrl != null)
-            {
-                var createdLogo = await _logoService.CreateLogoAsync(profileDto.LogoUrl);
-                if (!createdLogo.IsSuccess)
-                    return ServiceResult<ProfileDto>.Failure(createdLogo.ErrorMessage);
-              
-
-                profile.LogoId = createdLogo.Data.LogoId;
-            }
             var oldLogo = profile.Logo;
+            profile.LogoId = createdLogo.Data.LogoId;
 
             await _dbContext.SaveChangesAsync();
+
             if (oldLogo != null)
-            {
-               
                 _dbContext.Logos.Remove(oldLogo);
-            }
+        }
 
-            // Update related collections by removing old and adding new
-            _dbContext.AlternativeTitles.RemoveRange(profile.AlternativeTitles);
-            _dbContext.Deliverable.RemoveRange(profile.Deliverables);
-            _dbContext.Knowledge.RemoveRange(profile.Knowledge);
-            _dbContext.KeySkills.RemoveRange(profile.KeySkill);
-            _dbContext.MainTasks.RemoveRange(profile.MainTasks);
-
-            var createdAlternativeTitles =
-                await _alternativeTitleService.CreateAlternativeTitles(profileDto.AlternativeTitle.Split(',').ToList(),
-                    profile.ProfileId);
+        // -----------------------
+        // Update AlternativeTitles
+        // -----------------------
+        _dbContext.AlternativeTitles.RemoveRange(profile.AlternativeTitles);
+        if (string.IsNullOrWhiteSpace(profileDto.AlternativeTitle))
+        {
+            profile.AlternativeTitles = null;
+        }
+        else
+        {
+            var createdAlternativeTitles = await _alternativeTitleService.CreateAlternativeTitles(
+                profileDto.AlternativeTitle.Split(',').ToList(),
+                profile.ProfileId
+            );
             if (!createdAlternativeTitles.IsSuccess)
                 return ServiceResult<ProfileDto>.Failure(createdAlternativeTitles.ErrorMessage);
 
-            var createdDeliverables =
-                await _deliverableService.CreateDeliverables(profileDto.Deliverable.Split(',').ToList(),
-                    profile.ProfileId);
+            profile.AlternativeTitles = createdAlternativeTitles.Data;
+        }
+
+        // -----------------------
+        // Update Deliverables
+        // -----------------------
+        _dbContext.Deliverable.RemoveRange(profile.Deliverables);
+        if (string.IsNullOrWhiteSpace(profileDto.Deliverable))
+        {
+            profile.Deliverables = null;
+        }
+        else
+        {
+            var createdDeliverables = await _deliverableService.CreateDeliverables(
+                profileDto.Deliverable.Split(',').ToList(),
+                profile.ProfileId
+            );
             if (!createdDeliverables.IsSuccess)
                 return ServiceResult<ProfileDto>.Failure(createdDeliverables.ErrorMessage);
 
-            var creadedKnowledge = await _knowledgeService.CreateKnowledge(profileDto.Knowledge.Split(',').ToList(),
-                profile.ProfileId);
-            if (!creadedKnowledge.IsSuccess)
-                return ServiceResult<ProfileDto>.Failure(creadedKnowledge.ErrorMessage);
+            profile.Deliverables = createdDeliverables.Data;
+        }
 
-            var createdKeySkill = await _keySkillService.CreateKeySkills(profileDto.KeySkill.Split(',').ToList(),
-                profile.ProfileId);
+        // -----------------------
+        // Update Knowledge
+        // -----------------------
+        _dbContext.Knowledge.RemoveRange(profile.Knowledge);
+        if (string.IsNullOrWhiteSpace(profileDto.Knowledge))
+        {
+            profile.Knowledge = null;
+        }
+        else
+        {
+            var createdKnowledge = await _knowledgeService.CreateKnowledge(
+                profileDto.Knowledge.Split(',').ToList(),
+                profile.ProfileId
+            );
+            if (!createdKnowledge.IsSuccess)
+                return ServiceResult<ProfileDto>.Failure(createdKnowledge.ErrorMessage);
+
+            profile.Knowledge = createdKnowledge.Data;
+        }
+
+        // -----------------------
+        // Update KeySkills
+        // -----------------------
+        _dbContext.KeySkills.RemoveRange(profile.KeySkill);
+        if (string.IsNullOrWhiteSpace(profileDto.KeySkill))
+        {
+            profile.KeySkill = null;
+        }
+        else
+        {
+            var createdKeySkill = await _keySkillService.CreateKeySkills(
+                profileDto.KeySkill.Split(',').ToList(),
+                profile.ProfileId
+            );
             if (!createdKeySkill.IsSuccess)
                 return ServiceResult<ProfileDto>.Failure(createdKeySkill.ErrorMessage);
 
-            var createdMainTask = await _mainTaskService.CreateMainTask(profileDto.MainTask.Split(',').ToList(),
-                profile.ProfileId);
+            profile.KeySkill = createdKeySkill.Data;
+        }
+
+        // -----------------------
+        // Update MainTasks
+        // -----------------------
+        _dbContext.MainTasks.RemoveRange(profile.MainTasks);
+        if (string.IsNullOrWhiteSpace(profileDto.MainTask))
+        {
+            profile.MainTasks = null;
+        }
+        else
+        {
+            var createdMainTask = await _mainTaskService.CreateMainTask(
+                profileDto.MainTask.Split(',').ToList(),
+                profile.ProfileId
+            );
             if (!createdMainTask.IsSuccess)
                 return ServiceResult<ProfileDto>.Failure(createdMainTask.ErrorMessage);
 
-            profile.AlternativeTitles = createdAlternativeTitles.Data;
-            profile.Deliverables = createdDeliverables.Data;
-            profile.Knowledge = creadedKnowledge.Data;
-            profile.KeySkill = createdKeySkill.Data;
             profile.MainTasks = createdMainTask.Data;
-
-            await _dbContext.SaveChangesAsync();
-
-            return ServiceResult<ProfileDto>.Success(profile.ToDto());
         }
-        catch (Exception ex)
-        {
-            return ServiceResult<ProfileDto>.Failure($"An error occurred: {ex.Message}");
-        }
+
+        // Save all changes
+        await _dbContext.SaveChangesAsync();
+
+        return ServiceResult<ProfileDto>.Success(profile.ToDto());
     }
+    catch (Exception ex)
+    {
+        return ServiceResult<ProfileDto>.Failure($"An error occurred: {ex.Message}");
+    }
+}
+
 }

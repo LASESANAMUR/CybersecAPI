@@ -8,7 +8,21 @@ using CybersecInfrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container. A voir pour adapter
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins(
+                "http://localhost:5055", //Swagger (API)
+                "http://localhost:8080", // Appsmith (localhost)
+                "http://localhost:3000", // Retool (localhost)
+                "http://localhost:10000" // Budibase (localhost)
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -65,7 +79,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var enableSwagger = builder.Configuration.GetValue<bool>("EnableSwagger");
+if (enableSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -73,5 +88,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
+app.UseCors("AllowFrontend");
 app.Run();
